@@ -2,11 +2,13 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
+import { getAllPays } from '../store/paysSlice'
+
 
 const SideBar = () => {
 
 
-  const pays = useSelector(state => state.pays)
+  const pays = useSelector(getAllPays)
 
   // Extract indepYear properties and add them to a set to remove duplicates
   const uniqueIndepYears = new Set(pays?.map(pay => pay.indepYear))
@@ -15,7 +17,8 @@ const SideBar = () => {
   const sortedIndepYears = [...uniqueIndepYears].sort()
   
 
-  console.log(sortedIndepYears)
+  // console.log(sortedIndepYears)
+
 
   return (
     <div>

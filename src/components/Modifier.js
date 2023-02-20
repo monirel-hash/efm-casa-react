@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import {  moddifierPopulation } from '../store/paysSlice';
+import {  updatePopulation } from '../store/paysSlice';
+import { getAllPays } from '../store/paysSlice';
 
 const Modifier = () => {
   const dispatch = useDispatch();
@@ -9,22 +10,33 @@ const Modifier = () => {
   const [population, setPopulation] = useState('');
 
 
-  const pays = useSelector(state=>state.pays)
+  const pays = useSelector(getAllPays)
+
+  const navigate = useNavigate()
 
 
   const handleUpdatePopulation = (e) => {
     e.preventDefault();
     const pay = pays.find((pay) => pay.name === countryName);
     if (pay) {
-      const updatedCountry = {
-        name: countryName,
-        population: Number(population),
-      };
-      dispatch(moddifierPopulation(updatedCountry));
+      const payload = {
+        id: pay.id,
+        updatedPop : {
+          ...pay,
+          population: Number(population)
+        }
+        
+        }
+      dispatch(updatePopulation(payload))
       setCountryName('');
       setPopulation('');
+      navigate('/');
+      
+    } else {
+      console.log('this name is not found');
     }
   };
+  
 
   return (
     <form className="border p-3 mb-3">

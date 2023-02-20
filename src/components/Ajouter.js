@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { ajoutePay, moddifierPopulation } from '../store/paysSlice';
+import { addPay } from '../store/paysSlice';
 
 const Ajouter = () => {
   const dispatch = useDispatch();
@@ -10,19 +10,24 @@ const Ajouter = () => {
   const [indpyear, setIndpyear] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
+  const navigate = useNavigate()
+
   const handleAddCountry = (e) => {
     e.preventDefault();
     const newCountry = {
+      id : new Date().getTime(),
       name: countryName,
       population: Number(population),
       imageUrl: imageUrl,
       indepYear: Number(indpyear),
+      continent : 'Europe'
     };
-    dispatch(ajoutePay(newCountry));
+    dispatch(addPay(newCountry));
     setCountryName('');
     setPopulation('');
     setImageUrl('');
     setIndpyear('');
+    navigate('/')
   };
 
 

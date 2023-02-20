@@ -1,150 +1,99 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const initialState = [
-  {
-    code: "MAR",
-    name: "Morocco",
-    continent: "Africa",
-    surfaceArea: 446550,
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/2/2c/Flag_of_Morocco.svg",
-    indepYear: 1956,
-    population: 36910558,
-    cities: [
-      {
-        name: "Casablanca",
-        district: "Casablanca-Settat",
-        population: 3359818,
-        capital: false
-      },
-      {
-        name: "Rabat",
-        district: "Rabat-Salé-Kénitra",
-        population: 577827,
-        capital: true
-      },
-      {
-        name: "Marrakesh",
-        district: "Marrakesh-Safi",
-        population: 928850,
-        capital: false
-      }
-    ]
-  },
-  {
-    code: "DZA",
-    name: "Algeria",
-    continent: "Africa",
-    surfaceArea: 2381741,
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/7/77/Flag_of_Algeria.svg",
-    indepYear: 1962,
-    population: 43851043,
-    cities: [
-      {
-        name: "Algiers",
-        district: "Algiers Province",
-        population: 2881603,
-        capital: true
-      },
-      {
-        name: "Oran",
-        district: "Oran Province",
-        population: 1008734,
-        capital: false
-      },
-      {
-        name: "Constantine",
-        district: "Constantine Province",
-        population: 448374,
-        capital: false
-      }
-    ]
-  },
-  {
-    code: "TUN",
-    name: "Tunisia",
-    continent: "Africa",
-    surfaceArea: 163610,
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Tunisia.svg",
-    indepYear: 1956,
-    population: 11818619,
-    cities: [
-      {
-        name: "Tunis",
-        district: "Tunis Governorate",
-        population: 638845,
-        capital: true
-      },
-      {
-        name: "Sfax",
-        district: "Sfax Governorate",
-        population: 321828,
-        capital: false
-      },
-      {
-        name: "Sousse",
-        district: "Sousse Governorate",
-        population: 221530,
-        capital: false
-      }
-    ]
-  },
-  {
-    code: "FR",
-    name: "France",
-    continent: "Europe",
-    surfaceArea: 643801,
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/1280px-Flag_of_France.svg.png",
-    indepYear: 1945,
-    population: 66710000,
-    cities: [
-      {
-        name: "Paris",
-        district: "Île-de-France",
-        population: 2140526,
-        capital: true
-      },
-      {
-        name: "Marseille",
-        district: "Provence-Alpes-Côte d'Azur",
-        population: 861635,
-        capital: false
-      },
-      {
-        name: "Lyon",
-        district: "Auvergne-Rhône-Alpes",
-        population: 518635,
-        capital: false
-      }
-    ]
-  },
-];
 
-  
+const API_URL = 'http://localhost:5000/pays'
+
+const initialState = {
+  pays : [],
+  loading : null,
+  error : null
+}
+
+export const fetchPays = createAsyncThunk('fetch/pays', async()=>{
+    const {data} = await axios.get(API_URL)
+    return data
+})
+
+export const addPay = createAsyncThunk('add/pays', async(newpay)=>{
+  try{
+    const {data} = await axios.post(API_URL,newpay)
+    return data
+  }catch(e){
+    console.log('post error')
+  }
+})
+
+
+export const updatePopulation = createAsyncThunk('update/pays', async (payload) => {
+  const { id, updatedPop } = payload;
+  try {
+    const { data } = await axios.put(`${API_URL}/${id}`, updatedPop);
+    return data;
+  } catch (e) {
+    console.log('update error');
+  }
+});
+
 
 const paysSlice = createSlice({
     name : 'pays',
     initialState : initialState,
     reducers: {
-        ajoutePay(state,action){
-            state.push(action.payload)
-        },
-        moddifierPopulation(state,action){
-          state.forEach((pay)=>{
-            if (pay.name  === action.payload.name){
-              pay.population = action.payload.population
+        
+        filter(state, action) {
+          // console.log(action.type)     
+            if(action.payload.type === 'FILTER_BY_POPULATION'){
+              console.log('pop')
+              state.sort((a, b) => b.population - a.population);
+              return;
             }
-          })
-        },
-        Filter(state,action){
-            state
+            if (action.payload.type === 'FILTER_BY_CONTINENT'){
+              console.log('cont')
+              state.sort((a, b) => a.continent.localeCompare(b.continent));
+              return;
+            }
+            //console.log('finally')
+          
         }
-    }
+        
+    },
+    extraReducers: (builder) => {
+      builder
+      .addCase(fetchPays.pending, (state, action) => {
+        state.loading  = 'pending'
+      })
+      .addCase(fetchPays.fulfilled, (state, action) => {
+        state.pays = action.payload
+        state.loading = 'success'
+      })
+      .addCase(fetchPays.rejected, (state, action) => {
+        state.loading = 'failed'
+        state.error = 'Can not download the data from the server'
+      })
+      .addCase(addPay.fulfilled, (state, action) => {
+        // console.log(action.meta.arg)
+        state.pays.push(action.meta.arg)
+      })
+      .addCase(updatePopulation.fulfilled, (state, action) => {
+        console.log(action)
+        state.pays.forEach((pay)=>{
+          if (pay.id  === action.payload.id){
+            pay.population = action.payload.population
+          }
+        })
+      })
+
+      
+    },
 })
 
+export const getAllPays = state => state.pays.pays
 
-export const { ajoutePay, moddifierPopulation } = paysSlice.actions
+export const getPaysError = state => state.pays.error
+
+export const getPaysLoading = state => state.pays.loading
+
+export const { ajoutePay, moddifierPopulation, filter } = paysSlice.actions
+
 export default paysSlice.reducer
