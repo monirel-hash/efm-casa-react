@@ -38,7 +38,7 @@ const Pays = () => {
         <div className='card-body'>
           <h5 className='card-title'>{pay.name}</h5>
           <p className='card-text'>Population: {pay.population}</p>
-          <Link to={`/pays/${pay.code}`} className='btn btn-primary'>
+          <Link to={`/pay/${pay.code}`} className='btn btn-primary'>
             See details
           </Link>
         </div>

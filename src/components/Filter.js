@@ -24,7 +24,7 @@ const Filter = () => {
   return (
     <>
       <select value={selectedOption} onChange={handleFilter}>
-        <option value="">Select an option</option>
+        <option value="">Sort By option</option>
         <option value="population">Sort By Population</option>
         <option value="continent">Sort By Continent</option>
       </select>

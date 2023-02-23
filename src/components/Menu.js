@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import Filter from './Filter'
+import Search from './Search'
 
 const Menu = () => {
   return (
@@ -10,6 +11,7 @@ const Menu = () => {
         <Link to="/ajouter">Ajouter</Link>
         <Link to="/modifier/1">Modifier</Link>
         <Filter />
+        <Search />
       </ul>
     </div>
   )
