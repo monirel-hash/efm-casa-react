@@ -5,15 +5,10 @@ import Menu from "./components/Menu"
 import Ajouter from "./components/Ajouter"
 
 import Modifier from "./components/Modifier"
-
 import Filter from "./components/Filter"
-
 import Home from './components/Home';
-
 import Pays from './components/Pays';
-
 import Details from './components/Details';
-
 import Search from './components/Search';
 
 
@@ -33,7 +28,7 @@ function App() {
 
             <Route path="/pay/:code" element={<Details />} />
         </Route>
-            
+            //test
       </Routes>
     </BrowserRouter>
   );
